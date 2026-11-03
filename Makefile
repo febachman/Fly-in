@@ -35,11 +35,11 @@ install: $(VENV_PYTHON)
 	@echo "Development environment ready! ✅"
 
 
-run:
+run: install
 	PYTHONPATH=$(SRC) $(VENV_PYTHON) $(SRC)/$(MAIN) $(CONFIG)
 
 
-debug:
+debug: install
 	PYTHONPATH=$(SRC) $(VENV_PYTHON) -m pdb $(SRC)/$(MAIN) $(CONFIG)
 
 
@@ -48,15 +48,15 @@ test: install
 	@echo "Tests passed! ✅"
 
 
-lint:
+lint: install
 	$(VENV_PYTHON) -m flake8 $(SRC) $(TESTS)
-	$(VENV_PYTHON) -m mypy $(SRC) $(MYPY_FLAGS)
+	$(VENV_PYTHON) -m mypy $(SRC) $(TESTS) $(MYPY_FLAGS)
 	@echo "Lint and type checks passed! ✅"
 
 
-lint-strict:
+lint-strict: install
 	$(VENV_PYTHON) -m flake8 $(SRC) $(TESTS)
-	$(VENV_PYTHON) -m mypy $(SRC) --strict
+	$(VENV_PYTHON) -m mypy $(SRC) $(TESTS) --strict
 	@echo "Strict type check passed! ✅"
 
 
