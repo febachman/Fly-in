@@ -169,7 +169,7 @@ class Simulation:
         destination: str,
         occupancy: dict[str, int],
     ) -> bool:
-        """Check whether a hub has room for another drone"""
+        """Check whether a hub has room for another drone."""
 
         if destination in (
             self.graph.start_hub_name,
@@ -185,7 +185,34 @@ class Simulation:
         current = occupancy.get(destination, 0)
         reserved = self.reserved_hubs.get(destination, 0)
 
-        return current + reserved < hub.max_drones
+        leaving = 0
+
+        if hub.zone == "restricted":
+            for drone in self.drones:
+                if drone.current_hub != destination:
+                    continue
+
+                if drone.is_delivered or drone.is_in_transit:
+                    continue
+
+                path = self.paths[drone.drone_id]
+                position = self.path_positions[drone.drone_id]
+
+                if (
+                    position < len(path) - 1
+                    and path[position + 1] == self.graph.end_hub_name
+                ):
+                    leaving += 1
+
+            connection = self.graph.get_connection(
+                destination,
+                self.graph.end_hub_name,
+            )
+
+            if connection is not None:
+                leaving = min(leaving, connection.max_link_capacity)
+
+        return current + reserved - leaving < hub.max_drones
 
     def _get_remaining_cost(self, drone: Drone) -> int:
         """Calculate the remaining movement cost along a drone's path"""

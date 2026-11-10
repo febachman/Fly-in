@@ -12,24 +12,39 @@ import sys
 from src.graph import Graph
 from src.parser import ConfigParser
 from src.simulation import Simulation
+from src.visualizer import Visualizer
 
 
 def main() -> int:
     """Run the simulation using the provided configuration file"""
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 3):
         print(
-            "Usage: python -m src.main <configuration_file>",
+            "Usage: python -m src.main "
+            "<configuration_file> [--visual]",
             file=sys.stderr,
         )
+        return 1
+
+    visual_mode = len(sys.argv) == 3 and sys.argv[2] == "--visual"
+
+    if len(sys.argv) == 3 and not visual_mode:
+        print("Invalid argument. Use --visual.", file=sys.stderr)
         return 1
 
     try:
         config = ConfigParser().parse_file(sys.argv[1])
         graph = Graph(config)
-        simulation = Simulation(graph, config["nb_drones"])
+        nb_drones = config["nb_drones"]
 
-        for turn in simulation.run():
-            print(turn)
+        simulation = Simulation(graph, nb_drones)
+        history = simulation.run()
+
+        if visual_mode:
+            visualizer = Visualizer(graph, nb_drones)
+            visualizer.display(history)
+        else:
+            for turn in history:
+                print(turn)
 
     except (OSError, ValueError, RuntimeError) as error:
         print(f"Error: {error}", file=sys.stderr)

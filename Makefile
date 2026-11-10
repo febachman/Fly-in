@@ -36,7 +36,7 @@ install: $(VENV_PYTHON)
 
 
 run: install
-	$(VENV_PYTHON) -m $(MAIN) $(CONFIG)
+	$(VENV_PYTHON) -m $(MAIN) $(CONFIG) $(ARGS)
 
 
 debug: install
