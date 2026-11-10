@@ -1,6 +1,6 @@
 PYTHON = python3
 
-MAIN = main.py
+MAIN = src.main
 CONFIG = config.txt
 OUTPUT_TEST = simulation_output.txt
 
@@ -36,11 +36,11 @@ install: $(VENV_PYTHON)
 
 
 run: install
-	PYTHONPATH=$(SRC) $(VENV_PYTHON) $(SRC)/$(MAIN) $(CONFIG)
+	$(VENV_PYTHON) -m $(MAIN) $(CONFIG)
 
 
 debug: install
-	PYTHONPATH=$(SRC) $(VENV_PYTHON) -m pdb $(SRC)/$(MAIN) $(CONFIG)
+	$(VENV_PYTHON) -m pdb -m $(MAIN) $(CONFIG)
 
 
 test: install
